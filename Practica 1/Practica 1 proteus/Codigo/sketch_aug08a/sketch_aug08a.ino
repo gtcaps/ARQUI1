@@ -3,7 +3,6 @@
 #include <MD_MAX72xx.h>
 #include <SPI.h>
 
-
 // Configuracion para las matrices
 #define HARDWARE_TYPE MD_MAX72XX::FC16_HW
 #define MAX_DEVICES 2
@@ -14,13 +13,16 @@ MD_Parola myDisplay = MD_Parola(HARDWARE_TYPE, DATA_PIN, CLK_PIN, CS_PIN, MAX_DE
 
 // Scrolling
 uint8_t scrollSpeed = 100;
+//uint8_t scrollSpeed = 0;
 textEffect_t scrollEffect = PA_SCROLL_LEFT;
+//textEffect_t scrollEffect = PA_PRINT;
 textPosition_t scrollAlign = PA_LEFT;
+//textPosition_t scrollAlign = PA_CENTER;
 uint16_t scrollPause = 0;
 
 // Texto para la matriz
-#define BUF_SIZE 75
-char message[BUF_SIZE] = {"P1 - GRUPO 2 - SECCION B"};
+//#define BUF_SIZE 75
+char message[] = "Arqui 1";
 
 // Constantes
 #define DERECHA    0
@@ -46,8 +48,6 @@ int btnCambioDireccion = 6;
 #define F 3
 #define G 2
 
-
-
 void setup() {
   // Serial
   Serial.begin(9600);
@@ -67,12 +67,10 @@ void setup() {
   pinMode(F, OUTPUT);
   pinMode(G, OUTPUT);
 
-  
-
   myDisplay.begin();
   myDisplay.setIntensity(5);
   myDisplay.displayClear();
-  myDisplay.displayText(message, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
+  myDisplay.displayText(message, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect); 
 }
 
 void verificarVelocidad() {
@@ -80,25 +78,64 @@ void verificarVelocidad() {
   myDisplay.setSpeed(slideSpeed);
 }
 
-// Verificar el cambio de Direccion
-void cambioDireccion () {
-
-  if (digitalRead(btnCambioDireccion) == DERECHA){
-    Serial.println("DER");
-    myDisplay.setTextEffect(PA_SCROLL_RIGHT, PA_SCROLL_RIGHT);
-    //velocidad = 400;
-    //verificarVelocidad();
-  }
+//verificar accion
+void cambioDireccion(){
+  if(digitalRead(btnCambioForma) == MOVIMIENTO){
+    // Verificar el cambio de Direccion
+      if (digitalRead(btnCambioDireccion) == DERECHA){
+        Serial.println("DER");
+        myDisplay.setTextEffect(PA_SCROLL_RIGHT, PA_SCROLL_RIGHT);
+        //myDisplay.write(message);
+        //delay(1000);
+        //velocidad = 400;
+        //verificarVelocidad();
+      }
   
-  if (digitalRead(btnCambioDireccion) == IZQUIERDA) {
-    Serial.println("IZQ");
-    //velocidad = 50;
-    myDisplay.setTextEffect(PA_SCROLL_LEFT, PA_SCROLL_LEFT);
-    //verificarVelocidad();
+      if (digitalRead(btnCambioDireccion) == IZQUIERDA) {
+        Serial.println("IZQ");
+        //velocidad = 50;
+        myDisplay.setTextEffect(PA_SCROLL_LEFT, PA_SCROLL_LEFT);
+        //verificarVelocidad();
+      }
   }
-  
+  if(digitalRead(btnCambioForma) == PASO){
+       // Verificar el cambio de Direccion
+      if (digitalRead(btnCambioDireccion) == DERECHA){
+        Serial.println("DER");
+        Serial.println(sizeof(message));
+        //myDisplay.setTextEffect(PA_NO_EFFECT, PA_NO_EFFECT);
+        for(int i = 0; i < sizeof(message); i++){
+           Serial.println(message[i]);
+           //myDisplay.displayClear();
+           //myDisplay.displayText(message, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
+           myDisplay.setTextEffect(PA_NO_EFFECT, PA_NO_EFFECT);
+           myDisplay.setTextAlignment(PA_CENTER);
+           myDisplay.write(message[i]);
+           //verificarVelocidad();
+           delay(100 + velocidad);
+        }
+        myDisplay.displayClear();
+        myDisplay.displayText(message, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect); 
+      }
+      
+      if (digitalRead(btnCambioDireccion) == IZQUIERDA) {
+        Serial.println("IZQ");
+        Serial.println(sizeof(message));
+        //myDisplay.setTextEffect(PA_NO_EFFECT, PA_NO_EFFECT);
+        for(int i = sizeof(message)-1; i >= 0; i--){
+           Serial.println(message[i]);
+           //myDisplay.displayClear();
+           //myDisplay.displayText(message, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
+           myDisplay.setTextEffect(PA_NO_EFFECT, PA_NO_EFFECT);
+           myDisplay.setTextAlignment(PA_CENTER);
+           myDisplay.write(message[i]);
+           delay(100 + velocidad);
+        }
+        myDisplay.displayClear();
+        myDisplay.displayText(message, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect); 
+      } 
+  }
 }
-
 
 void encenderDisplay7(int a, int b, int c, int d, int e, int f, int g) {
   digitalWrite(A, a);
