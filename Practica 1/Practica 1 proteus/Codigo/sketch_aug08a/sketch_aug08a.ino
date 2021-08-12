@@ -190,7 +190,7 @@ void cambioCadena(){
     Serial.println("Ingrese Nueva Cadena: ");
     
     cambio = true;
-    int cadena[20];
+    int cadena[sizeof(message)];
     int count = 0;
     
     while(cambio){
@@ -216,7 +216,8 @@ void cambioCadena(){
       message[i] = cadena[i];
     }
     
-    Serial.println("Cadena Cambiada");
+    Serial.print("Cadena Cambiada a: ");
+    Serial.println(message);
     Serial.println();
     delay(500);
   }
