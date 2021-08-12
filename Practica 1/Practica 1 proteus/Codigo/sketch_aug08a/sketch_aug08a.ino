@@ -22,7 +22,7 @@ uint16_t scrollPause = 0;
 
 // Texto para la matriz
 //#define BUF_SIZE 75
-char message[] = "Arqui 1";
+char message[20] = "Arqui 1";
 
 // Constantes
 #define DERECHA    0
@@ -38,6 +38,7 @@ int valorPot;
 // Botones
 int btnCambioForma = 7;
 int btnCambioDireccion = 6;
+#define btnCambioCadena A1
 
 // Display
 #define A 12
@@ -52,11 +53,14 @@ void setup() {
   // Serial
   Serial.begin(9600);
   Serial.println("Iniciando Practica 1...\n");
+  Serial.println();
+  Serial.setTimeout(1500);
 
   // PINES
   pinMode(btnCambioForma, INPUT);
   pinMode(btnCambioDireccion, INPUT);
   pinMode(POTENCIOMETRO, INPUT);
+  pinMode(btnCambioCadena, INPUT);
 
   // Display 7 seg
   pinMode(A, OUTPUT);
@@ -78,12 +82,12 @@ void verificarVelocidad() {
   myDisplay.setSpeed(slideSpeed);
 }
 
+
 //verificar accion
 void cambioDireccion(){
   if(digitalRead(btnCambioForma) == MOVIMIENTO){
     // Verificar el cambio de Direccion
       if (digitalRead(btnCambioDireccion) == DERECHA){
-        Serial.println("DER");
         myDisplay.setTextEffect(PA_SCROLL_RIGHT, PA_SCROLL_RIGHT);
         //myDisplay.write(message);
         //delay(1000);
@@ -92,7 +96,6 @@ void cambioDireccion(){
       }
   
       if (digitalRead(btnCambioDireccion) == IZQUIERDA) {
-        Serial.println("IZQ");
         //velocidad = 50;
         myDisplay.setTextEffect(PA_SCROLL_LEFT, PA_SCROLL_LEFT);
         //verificarVelocidad();
@@ -101,11 +104,8 @@ void cambioDireccion(){
   if(digitalRead(btnCambioForma) == PASO){
        // Verificar el cambio de Direccion
       if (digitalRead(btnCambioDireccion) == DERECHA){
-        Serial.println("DER");
-        Serial.println(sizeof(message));
         //myDisplay.setTextEffect(PA_NO_EFFECT, PA_NO_EFFECT);
         for(int i = 0; i < sizeof(message); i++){
-           Serial.println(message[i]);
            //myDisplay.displayClear();
            //myDisplay.displayText(message, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
            myDisplay.setTextEffect(PA_NO_EFFECT, PA_NO_EFFECT);
@@ -119,11 +119,8 @@ void cambioDireccion(){
       }
       
       if (digitalRead(btnCambioDireccion) == IZQUIERDA) {
-        Serial.println("IZQ");
-        Serial.println(sizeof(message));
         //myDisplay.setTextEffect(PA_NO_EFFECT, PA_NO_EFFECT);
         for(int i = sizeof(message)-1; i >= 0; i--){
-           Serial.println(message[i]);
            //myDisplay.displayClear();
            //myDisplay.displayText(message, scrollAlign, scrollSpeed, scrollPause, scrollEffect, scrollEffect);
            myDisplay.setTextEffect(PA_NO_EFFECT, PA_NO_EFFECT);
@@ -187,11 +184,49 @@ void verificarNivelVelocidad() {
   }
 }
 
-void loop() {  
+void cambioCadena(){
+  boolean cambio = false;
+  if(digitalRead(btnCambioCadena)==1){
+    Serial.println("Ingrese Nueva Cadena: ");
+    
+    cambio = true;
+    int cadena[20];
+    int count = 0;
+    
+    while(cambio){
+      if (Serial.available()){
+            int entrada = Serial.read();
+
+            if(entrada == 13){
+              cambio = false;
+            }else{
+              if(count<20){
+                cadena[count] = entrada;
+                count++;
+              }
+            }     
+      }//Fin Lectura
+    }//fin while(cambio)
+    
+    for(int i = 0; i < sizeof(message); i++){
+      message[i] = 0;
+    }
+    
+    for(int i = 0; i < sizeof(message); i++){
+      message[i] = cadena[i];
+    }
+    
+    Serial.println("Cadena Cambiada");
+    Serial.println();
+    delay(500);
+  }
+}
+
+void loop() {
+  cambioCadena();
+  
   cambioDireccion();
   verificarNivelVelocidad();
-  
-  
 
   if (myDisplay.displayAnimate()) {
     myDisplay.displayReset();
