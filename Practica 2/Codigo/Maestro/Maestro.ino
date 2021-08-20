@@ -23,12 +23,14 @@ byte colPins[COLS] = {7, 6, 5};
 char password[25];
 int dir = 0;
 bool bandera = false;
+int valor_activado = 1;
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
 
 void setup() {
-  
+
+  Wire.begin();
   lcd.begin(16, 2);
 //  lcd.setCursor(0, 0);
 //  lcd.print("CASA ACYE1");
@@ -63,6 +65,9 @@ void enterPassword() {
       if (verificarPass()) {
         clearLCD();
         imprimirLCD("Bienvenido Perro", 0, 1);
+        Wire.beginTransmission(1); //iniciamos la transmisión con el arduino esclavo, este arduino esclavo está conectado como canal 1 
+        Wire.write(valor_activado); //Escribimos el valor de la variable que funcionará para los motores
+        Wire.endTransmission(); //se cierra la transmisión
       } else {
         reiniciarPass();
         clearLCD();
