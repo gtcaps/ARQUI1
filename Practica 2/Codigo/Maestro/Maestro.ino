@@ -4,6 +4,11 @@
 #include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(0x27, 16, 2);//direccion, columnas, filas
 
+
+const String originalPassword = "202102";
+const String enter = "*";
+String currentPassword = "";
+
 const byte ROWS = 4; //4 filas
 const byte COLS = 3; //3 columnas 
 char keys[ROWS][COLS] = {
@@ -25,46 +30,75 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 void setup() {
   
   lcd.begin(16, 2);
-  lcd.setCursor(0, 0);
-  lcd.print("CASA ACYE1");
-  lcd.setCursor(0, 1);
-  lcd.print("B-G02-S2");
-  delay(3000);
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print("INGRESE CONTRASEÑA");
-  lcd.setCursor(0, 1);
+//  lcd.setCursor(0, 0);
+//  lcd.print("CASA ACYE1");
+//  lcd.setCursor(0, 1);
+//  lcd.print("B-G02-S2");
+//  delay(3000);
+//  lcd.clear();
+//  lcd.setCursor(0, 0);
+//  lcd.print("INGRESE CONTRASEÑA");
+//  lcd.setCursor(0, 1);
+  pantallaLED();
+
   
 }
 
 void loop() {
-  
-  char key = keypad.getKey();
-  if(key){
-    password[dir] = key;
-    lcd.print(key);
-    dir = dir + 1;
+  enterPassword();
+}
 
-    if(key == '*'){
-      if(password[0] == '2' && password[1] == '0' && password[2] == '2' && password[3] == '1' && password[4] == '0' && password[5] == '2'){
-        lcd.setCursor(0, 0);
-        lcd.print("BIENVENIDO A CASA"); 
-        delay(2000);
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("INGRESE CONTRASEÑA");
-        dir = 0;
-      }else{
-        lcd.setCursor(0, 0);
-        lcd.print("ERROR EN CONTRASEÑA"); 
-        delay(2000);
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print("INGRESE CONTRASEÑA");
-        dir = 0;
+
+
+
+void enterPassword() {
+  char key = keypad.getKey();
+
+  if(key) {
+    if (String(key) == enter) {
+      clearLCD();
+      imprimirLCD("Verificando", 0, 0);
+      delay(500);
+      
+      if (verificarPass()) {
+        clearLCD();
+        imprimirLCD("Bienvenido Perro", 0, 1);
+      } else {
+        reiniciarPass();
+        clearLCD();
+        imprimirLCD("Error al verificar", 0, 0);
+        delay(500);
+        pantallaLED();  
       }
-      lcd.setCursor(0, 1);
+    } else {
+      
+      currentPassword.concat(String(key));
+      clearLCD();
+      imprimirLCD("Ingresando:", 0, 0);
+      imprimirLCD(currentPassword, 0, 1);
     }
   }
-  
+}
+
+void imprimirLCD(String texto, int col, int fil) {
+  lcd.setCursor(col,fil);
+  lcd.print(texto);
+}
+
+void clearLCD() {
+  lcd.clear();
+}
+
+boolean verificarPass() {
+  return originalPassword.equalsIgnoreCase(currentPassword);
+}
+
+void reiniciarPass() {
+  currentPassword = "";
+}
+
+void pantallaLED() {
+  clearLCD();
+  imprimirLCD("CASA ACYE1", 0, 0);
+  imprimirLCD("B-G02-S2", 0, 1);
 }
