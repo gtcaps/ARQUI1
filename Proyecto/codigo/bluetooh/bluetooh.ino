@@ -1,15 +1,23 @@
 String text;
-int velocidad =  map(800, 0, 1023, 0, 255);
+int velocidad =  map(500, 0, 1023, 0, 255);
 
 //Salidas
-const int pin9 = 9;
-const int pin8 = 8;
-const int pin7 = 7;
-const int pin6 = 6;
-const int pin5 = 5;
-const int pin4 = 4;
-const int pin3 = 3;
-const int pin2 = 2;
+const int llanta1_der = 9;
+const int llanta1_izq = 8;
+const int llanta2_der = 7;
+const int llanta2_izq = 6;
+const int llanta3_der = 5;
+const int llanta3_izq = 4;
+const int llanta4_der = 3;
+const int llanta4_izq = 2;
+
+// LEDS
+const int led_izquierdo = 12;
+const int led_derecho = 11;
+const int led_trasero = 10;
+
+String tipoMovimiento;
+String direccionMovimiento;
 
 void setup() {
   // put your setup code here, to run once:
@@ -17,159 +25,185 @@ void setup() {
   Serial.begin(9600);
   Serial.setTimeout(10);
 
-  pinMode(pin9, OUTPUT);
-  pinMode(pin8, OUTPUT);
-  pinMode(pin7, OUTPUT);
-  pinMode(pin6, OUTPUT);
-  pinMode(pin5, OUTPUT);
-  pinMode(pin4, OUTPUT);
-  pinMode(pin3, OUTPUT);
-  pinMode(pin2, OUTPUT);
+  pinMode(llanta1_der, OUTPUT);
+  pinMode(llanta1_izq, OUTPUT);
+  pinMode(llanta2_der, OUTPUT);
+  pinMode(llanta2_izq, OUTPUT);
+  pinMode(llanta3_der, OUTPUT);
+  pinMode(llanta3_izq, OUTPUT);
+  pinMode(llanta4_der, OUTPUT);
+  pinMode(llanta4_izq, OUTPUT);
+
+  pinMode(led_izquierdo, OUTPUT);
+  pinMode(led_derecho, OUTPUT);
+  pinMode(led_trasero, OUTPUT);
 }
 
 
 void velocidadAlta() {
   velocidad = 1023;
   velocidad = map(velocidad, 0, 1023, 0, 255);
+
+  if (direccionMovimiento == "up") {
+    moverAdelante();
+  }
+
+  if (direccionMovimiento == "down") {
+    moverAtras();
+  }
+
+  if (direccionMovimiento == "left") {
+    moverIzquierda();
+  }
+
+  if (direccionMovimiento == "right") {
+    moverDerecha();
+  }
 }
 
 void velocidadBaja() {
   velocidad = 500;
   velocidad = map(velocidad, 0, 1023, 0, 255);
+
+  if (direccionMovimiento == "up") {
+    moverAdelante();
+  }
+
+  if (direccionMovimiento == "down") {
+    moverAtras();
+  }
+
+  if (direccionMovimiento == "left") {
+    moverIzquierda();
+  }
+
+  if (direccionMovimiento == "right") {
+    moverDerecha();
+  }
 }
 
 void moverAdelante () {
-    analogWrite(pin9, velocidad);
-    analogWrite(pin8, 0);
-    analogWrite(pin7, velocidad);
-    analogWrite(pin6, 0);
-    analogWrite(pin5, velocidad);
-    analogWrite(pin4, 0);
-    analogWrite(pin3, velocidad);
-    analogWrite(pin2, 0);
+  analogWrite(llanta1_der, velocidad);
+  analogWrite(llanta1_izq, 0);
+  analogWrite(llanta2_der, velocidad);
+  analogWrite(llanta2_izq, 0);
+  analogWrite(llanta3_der, velocidad);
+  analogWrite(llanta3_izq, 0);
+  analogWrite(llanta4_der, velocidad);
+  analogWrite(llanta4_izq, 0);
+
+  digitalWrite(led_izquierdo, LOW);
+  digitalWrite(led_derecho, LOW);
+  digitalWrite(led_trasero, LOW);
 }
 
 void moverAtras() {
-    /*digitalWrite(pin9, LOW);
-    digitalWrite(pin8, HIGH);
-    digitalWrite(pin7, LOW);
-    digitalWrite(pin6, HIGH);
-    digitalWrite(pin5, LOW);
-    digitalWrite(pin4, HIGH);
-    digitalWrite(pin3, LOW);
-    digitalWrite(pin2, HIGH);*/
+  analogWrite(llanta1_der, 0);
+  analogWrite(llanta1_izq, velocidad);
+  analogWrite(llanta2_der, 0);
+  analogWrite(llanta2_izq, velocidad);
+  analogWrite(llanta3_der, 0);
+  analogWrite(llanta3_izq, velocidad);
+  analogWrite(llanta4_der, 0);
+  analogWrite(llanta4_izq, velocidad);
 
-    analogWrite(pin9, 0);
-    analogWrite(pin8, velocidad);
-    analogWrite(pin7, 0);
-    analogWrite(pin6, velocidad);
-    analogWrite(pin5, 0);
-    analogWrite(pin4, velocidad);
-    analogWrite(pin3, 0);
-    analogWrite(pin2, velocidad);
+  digitalWrite(led_izquierdo, LOW);
+  digitalWrite(led_derecho, LOW);
+  digitalWrite(led_trasero, LOW);
 }
 
 void moverDerecha() {
-    /*digitalWrite(pin9, LOW);
-    digitalWrite(pin8, LOW);
-    digitalWrite(pin7, HIGH);
-    digitalWrite(pin6, LOW);
-    digitalWrite(pin5, HIGH);
-    digitalWrite(pin4, LOW);
-    digitalWrite(pin3, HIGH);
-    digitalWrite(pin2, LOW);*/
+  analogWrite(llanta1_der, 0);
+  analogWrite(llanta1_izq, 0);
+  analogWrite(llanta2_der, velocidad);
+  analogWrite(llanta2_izq, 0);
+  analogWrite(llanta3_der, velocidad);
+  analogWrite(llanta3_izq, 0);
+  analogWrite(llanta4_der, velocidad);
+  analogWrite(llanta4_izq, 0);
 
-    analogWrite(pin9, 0);
-    analogWrite(pin8, 0);
-    analogWrite(pin7, velocidad);
-    analogWrite(pin6, 0);
-    analogWrite(pin5, velocidad);
-    analogWrite(pin4, 0);
-    analogWrite(pin3, velocidad);
-    analogWrite(pin2, 0);
+  digitalWrite(led_izquierdo, LOW);
+  digitalWrite(led_derecho, HIGH);
+  digitalWrite(led_trasero, LOW);
 }
 
 void moverIzquierda() {
-    /*digitalWrite(pin9, HIGH);
-    digitalWrite(pin8, LOW);
-    digitalWrite(pin7, LOW);
-    digitalWrite(pin6, LOW);
-    digitalWrite(pin5, HIGH);
-    digitalWrite(pin4, LOW);
-    digitalWrite(pin3, HIGH);
-    digitalWrite(pin2, LOW);*/
+  analogWrite(llanta1_der, velocidad);
+  analogWrite(llanta1_izq, 0);
+  analogWrite(llanta2_der, 0);
+  analogWrite(llanta2_izq, 0);
+  analogWrite(llanta3_der, velocidad);
+  analogWrite(llanta3_izq, 0);
+  analogWrite(llanta4_der, velocidad);
+  analogWrite(llanta4_izq, 0);
 
-    analogWrite(pin9, velocidad);
-    analogWrite(pin8, 0);
-    analogWrite(pin7, 0);
-    analogWrite(pin6, 0);
-    analogWrite(pin5, velocidad);
-    analogWrite(pin4, 0);
-    analogWrite(pin3, velocidad);
-    analogWrite(pin2, 0);
+  digitalWrite(led_izquierdo, HIGH);
+  digitalWrite(led_derecho, LOW);
+  digitalWrite(led_trasero, LOW);
 }
 
-void detenerMovimiento(){
-    /*digitalWrite(pin9, LOW);
-    digitalWrite(pin8, LOW);
-    digitalWrite(pin7, LOW);
-    digitalWrite(pin6, LOW);
-    digitalWrite(pin5, LOW);
-    digitalWrite(pin4, LOW);
-    digitalWrite(pin3, LOW);
-    digitalWrite(pin2, LOW);*/
+void detenerMovimiento() {
+  analogWrite(llanta1_der, 0);
+  analogWrite(llanta1_izq, 0);
+  analogWrite(llanta2_der, 0);
+  analogWrite(llanta2_izq, 0);
+  analogWrite(llanta3_der, 0);
+  analogWrite(llanta3_izq, 0);
+  analogWrite(llanta4_der, 0);
+  analogWrite(llanta4_izq, 0);
 
-    analogWrite(pin9, 0);
-    analogWrite(pin8, 0);
-    analogWrite(pin7, 0);
-    analogWrite(pin6, 0);
-    analogWrite(pin5, 0);
-    analogWrite(pin4, 0);
-    analogWrite(pin3, 0);
-    analogWrite(pin2, 0);
+  digitalWrite(led_izquierdo, LOW);
+  digitalWrite(led_derecho, LOW);
+  digitalWrite(led_trasero, HIGH);
+
+  Serial.write("El carro llego a la meta");
 }
 
 void loop() {
-  
+
   // CUANDO SE RECIBE SENAL DEL MODULO BLUETOOTH
   if (Serial.available() > 0) {
-    String str = Serial.readString();
+    tipoMovimiento = Serial.readString();
+  }
 
-    // VELOCIDAD ALTA
-    if (str == "fast") {
-        digitalWrite(13, HIGH);
-        velocidadAlta();
-    }
+  // VELOCIDAD ALTA
+  if (tipoMovimiento == "fast") {
+    digitalWrite(13, HIGH);
+    velocidadAlta();
+  }
 
-    // VELOCIDAD BAJA
-    if (str == "slow") {
-        digitalWrite(13, LOW);
-        velocidadBaja();
-    }
+  // VELOCIDAD BAJA
+  if (tipoMovimiento == "slow") {
+    digitalWrite(13, LOW);
+    velocidadBaja();
+  }
 
-    // MOV ADELANTE
-    if (str == "up") {
-      moverAdelante();
-    }
+  // MOV ADELANTE
+  if (tipoMovimiento == "up") {
+    moverAdelante();
+    direccionMovimiento = tipoMovimiento;
+  }
 
-    // MOV ATRAS
-    if (str == "down") {
-      moverAtras();
-    }
+  // MOV ATRAS
+  if (tipoMovimiento == "down") {
+    moverAtras();
+    direccionMovimiento = tipoMovimiento;
+  }
 
-    // MOV DERECHA
-    if (str == "right") {
-      moverDerecha();
-    }
+  // MOV DERECHA
+  if (tipoMovimiento == "right") {
+    moverDerecha();
+    direccionMovimiento = tipoMovimiento;
+  }
 
-    // MOV IZQUIERDA
-    if (str == "left") {
-      moverIzquierda();
-    }
+  // MOV IZQUIERDA
+  if (tipoMovimiento == "left") {
+    moverIzquierda();
+    direccionMovimiento = tipoMovimiento;
+  }
 
-    if (str == "stop") {
-      detenerMovimiento();
-    }
+  if (tipoMovimiento == "stop") {
+    detenerMovimiento();
   }
 
 }
