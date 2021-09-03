@@ -1,5 +1,9 @@
 String text;
 int velocidad =  map(500, 0, 1023, 0, 255);
+long duracion;
+long distancia; // float distancia para obtener decimales
+int echo=22;
+int trig=23;
 
 //Salidas
 const int llanta1_der = 9;
@@ -23,6 +27,7 @@ void setup() {
   // put your setup code here, to run once:
   pinMode(13, OUTPUT);
   Serial.begin(9600);
+  Serial1.begin(9600);
   Serial.setTimeout(10);
 
   pinMode(llanta1_der, OUTPUT);
@@ -37,6 +42,9 @@ void setup() {
   pinMode(led_izquierdo, OUTPUT);
   pinMode(led_derecho, OUTPUT);
   pinMode(led_trasero, OUTPUT);
+
+  pinMode(trig,OUTPUT); // emisor
+  pinMode(echo,INPUT); // Receptor
 }
 
 
@@ -151,59 +159,82 @@ void detenerMovimiento() {
   analogWrite(llanta3_izq, 0);
   analogWrite(llanta4_der, 0);
   analogWrite(llanta4_izq, 0);
+}
 
-  digitalWrite(led_izquierdo, LOW);
-  digitalWrite(led_derecho, LOW);
-  digitalWrite(led_trasero, HIGH);
+  void sensor(){
+  //Para estabilizar nuestro módulo ultrasónico
+  digitalWrite(trig,LOW);
+  delayMicroseconds(4);
+  //disparo de un pulso en el trigger de longitud 10us
+  digitalWrite(trig,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig,LOW);
 
-  Serial.write("El carro llego a la meta");
+  //Lectura de la duración del pulso HIGH generado hasta recibir el Echo
+  //pulseIn (high) espera a que el pin esté en HIGH, se inicia el tiempo, espera a que el pin pase a nivel LOW y para el cronómetro. 
+  duracion=pulseIn(echo,HIGH);
+
+  //Calculo distancia
+  distancia=duracion/58.4;// (cm)
+  Serial1.print("Distancia: ");
+  Serial1.print(distancia);
+  Serial1.println(" cm");
+  delay(100);
 }
 
 void loop() {
-
-  // CUANDO SE RECIBE SENAL DEL MODULO BLUETOOTH
-  if (Serial.available() > 0) {
-    tipoMovimiento = Serial.readString();
-  }
-
-  // VELOCIDAD ALTA
-  if (tipoMovimiento == "fast") {
-    digitalWrite(13, HIGH);
-    velocidadAlta();
-  }
-
-  // VELOCIDAD BAJA
-  if (tipoMovimiento == "slow") {
-    digitalWrite(13, LOW);
-    velocidadBaja();
-  }
-
-  // MOV ADELANTE
-  if (tipoMovimiento == "up") {
-    moverAdelante();
-    direccionMovimiento = tipoMovimiento;
-  }
-
-  // MOV ATRAS
-  if (tipoMovimiento == "down") {
-    moverAtras();
-    direccionMovimiento = tipoMovimiento;
-  }
-
-  // MOV DERECHA
-  if (tipoMovimiento == "right") {
-    moverDerecha();
-    direccionMovimiento = tipoMovimiento;
-  }
-
-  // MOV IZQUIERDA
-  if (tipoMovimiento == "left") {
-    moverIzquierda();
-    direccionMovimiento = tipoMovimiento;
-  }
-
-  if (tipoMovimiento == "stop") {
+  sensor();
+  if(distancia <= 20){
     detenerMovimiento();
-  }
+    digitalWrite(led_izquierdo, LOW);
+    digitalWrite(led_derecho, LOW);
+    digitalWrite(led_trasero, HIGH);
 
+    Serial.write("El carro llego a la meta");
+  }else{
+    // CUANDO SE RECIBE SENAL DEL MODULO BLUETOOTH
+    if (Serial.available() > 0) {
+      tipoMovimiento = Serial.readString();
+    }
+
+    // VELOCIDAD ALTA
+    if (tipoMovimiento == "fast") {
+      digitalWrite(13, HIGH);
+      velocidadAlta();
+    }
+
+    // VELOCIDAD BAJA
+    if (tipoMovimiento == "slow") {
+      digitalWrite(13, LOW);
+      velocidadBaja();
+    }
+
+    // MOV ADELANTE
+    if (tipoMovimiento == "up") {
+      moverAdelante();
+      direccionMovimiento = tipoMovimiento;
+    }
+
+    // MOV ATRAS
+    if (tipoMovimiento == "down") {
+      moverAtras();
+      direccionMovimiento = tipoMovimiento;
+    }
+
+    // MOV DERECHA
+    if (tipoMovimiento == "right") {
+      moverDerecha();
+      direccionMovimiento = tipoMovimiento;
+    }
+
+    // MOV IZQUIERDA
+    if (tipoMovimiento == "left") {
+      moverIzquierda();
+      direccionMovimiento = tipoMovimiento;
+    }
+
+    if (tipoMovimiento == "stop") {
+      detenerMovimiento();
+    } 
+  }
 }
