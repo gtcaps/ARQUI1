@@ -7,20 +7,76 @@ void setup() {
   Serial.setTimeout(10);
 }
 
+
+void velocidadAlta() {
+  
+}
+
+void velocidadBaja() {
+  
+}
+
+void moverAdelante () {
+  
+}
+
+void moverAtras() {
+  
+}
+
+void moverDerecha() {
+  
+}
+
+void moverIzquierda() {
+  
+}
+
+void detenerMovimiento(){
+  
+}
+
 void loop() {
   
-  // put your main code here, to run repeatedly:
+  // CUANDO SE RECIBE SENAL DEL MODULO BLUETOOTH
   if (Serial.available() > 0) {
     String str = Serial.readString();
 
+    // VELOCIDAD ALTA
     if (str == "fast") {
-      digitalWrite(13, HIGH);
+        digitalWrite(13, HIGH);
+        velocidadAlta();
     }
 
+    // VELOCIDAD BAJA
     if (str == "slow") {
-      digitalWrite(13, LOW);
+        digitalWrite(13, LOW);
+        velocidadBaja();
     }
-    
+
+    // MOV ADELANTE
+    if (str == "up") {
+      moverAdelante();
+    }
+
+    // MOV ATRAS
+    if (str == "down") {
+      moverAtras();
+    }
+
+    // MOV DERECHA
+    if (str == "right") {
+      moverDerecha();
+    }
+
+    // MOV IZQUIERDA
+    if (str == "left") {
+      moverIzquierda();
+    }
+
+    if (str == "stop") {
+      detenerMovimiento();
+    }
   }
-  
+
 }
